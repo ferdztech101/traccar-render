@@ -1,11 +1,10 @@
-# === FerdzTech Render Configuration ===
 services:
   - type: web
     name: traccar
     env: docker
     plan: starter
-    autoDeploy: true
     branch: main
+    autoDeploy: true
     dockerfilePath: Dockerfile
     disk:
       name: traccar-data
