@@ -1,4 +1,4 @@
-# === FerdzTech Verified Traccar v6.10.0 Dockerfile (Render Compatible) ===
+# === FerdzTech Verified Traccar v6.10.0 Dockerfile (Stable for Render) ===
 FROM openjdk:17-jdk-slim
 
 WORKDIR /opt/traccar
@@ -14,11 +14,17 @@ RUN set -eux; \
     echo "✅ Installation complete. Contents:" && ls -l && \
     if [ ! -f tracker-server.jar ]; then echo "❌ tracker-server.jar missing after install!" && exit 1; fi
 
-# Web UI port
 EXPOSE 8082
-# Default device listener port
 EXPOSE 5055
 
-CMD ["bash", "-c", "sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT:-8082}</entry>|\" /opt/traccar/conf/traccar.xml && \
-    sed -i \"s|<entry key='web.address'>.*</entry>|<entry key='web.address'>0.0.0.0</entry>|\" /opt/traccar/conf/traccar.xml || echo '<entry key=\"web.address\">0.0.0.0</entry>' >> /opt/traccar/conf/traccar.xml && \
-    echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082} && java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
+# --- FIX: safe config creation + web binding ---
+CMD ["bash", "-c", "\
+if [ ! -f /opt/traccar/conf/traccar.xml ]; then \
+  echo '<properties></properties>' > /opt/traccar/conf/traccar.xml; \
+fi && \
+grep -q 'web.port' /opt/traccar/conf/traccar.xml || \
+  sed -i '/<properties>/a <entry key=\"web.port\">${PORT:-8082}</entry>' /opt/traccar/conf/traccar.xml && \
+grep -q 'web.address' /opt/traccar/conf/traccar.xml || \
+  sed -i '/<properties>/a <entry key=\"web.address\">0.0.0.0</entry>' /opt/traccar/conf/traccar.xml && \
+echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082} && \
+java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
