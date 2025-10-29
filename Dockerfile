@@ -28,7 +28,8 @@ if [ ! -f $CONF ]; then echo '<properties></properties>' > $CONF; fi; \
 grep -q 'database.default.url' $CONF || sed -i '/<properties>/a <entry key=\"database.default.url\">jdbc:sqlite:/opt/traccar/data/database.db</entry>' $CONF; \
 grep -q 'logger.file' $CONF || sed -i '/<properties>/a <entry key=\"logger.file\">/opt/traccar/logs/tracker-server.log</entry>' $CONF; \
 grep -q 'web.address' $CONF || sed -i '/<properties>/a <entry key=\"web.address\">0.0.0.0</entry>' $CONF; \
-grep -q 'web.port' $CONF || sed -i '/<properties>/a <entry key=\"web.port\">${PORT:-8082}</entry>' $CONF; \
+grep -q 'web.port' $CONF || sed -i '/<properties>/a <entry key=\"web.port\">${PORT}</entry>' $CONF; \
 grep -q 'config.default' $CONF || sed -i '/<properties>/a <entry key=\"config.default\">/opt/traccar/conf/default.xml</entry>' $CONF; \
-echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082}; \
+echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT}; \
 java -Djava.net.preferIPv4Stack=true -jar tracker-server.jar $CONF"]
+
