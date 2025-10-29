@@ -19,4 +19,6 @@ EXPOSE 8082
 # Default device listener port
 EXPOSE 5055
 
-CMD ["bash", "-c", "sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT:-8082}</entry>|\" /opt/traccar/conf/traccar.xml && echo '🌍 Starting Traccar on port' ${PORT:-8082} && java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
+CMD ["bash", "-c", "sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT:-8082}</entry>|\" /opt/traccar/conf/traccar.xml && \
+    sed -i \"s|<entry key='web.address'>.*</entry>|<entry key='web.address'>0.0.0.0</entry>|\" /opt/traccar/conf/traccar.xml || echo '<entry key=\"web.address\">0.0.0.0</entry>' >> /opt/traccar/conf/traccar.xml && \
+    echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082} && java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
