@@ -3,13 +3,10 @@ services:
     name: traccar
     env: docker
     plan: starter
-    branch: main
-    dockerfilePath: Dockerfile
-    autoDeploy: true
     disk:
       name: traccar-data
       mountPath: /opt/traccar/data
       sizeGB: 1
     envVars:
       - key: PORT
-        value: 8082
+        value: 8080
