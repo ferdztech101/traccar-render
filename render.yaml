@@ -1,0 +1,16 @@
+# === FerdzTech Render Configuration ===
+services:
+  - type: web
+    name: traccar
+    env: docker
+    plan: starter
+    autoDeploy: true
+    branch: main
+    dockerfilePath: Dockerfile
+    disk:
+      name: traccar-data
+      mountPath: /opt/traccar/data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: 8082
