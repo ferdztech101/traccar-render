@@ -19,12 +19,12 @@ EXPOSE 5055
 
 # --- FIX: safe config creation + web binding ---
 CMD ["bash", "-c", "\
-if [ ! -f /opt/traccar/conf/traccar.xml ]; then \
-  echo '<properties></properties>' > /opt/traccar/conf/traccar.xml; \
-fi && \
-grep -q 'web.port' /opt/traccar/conf/traccar.xml || \
-  sed -i '/<properties>/a <entry key=\"web.port\">${PORT:-8082}</entry>' /opt/traccar/conf/traccar.xml && \
-grep -q 'web.address' /opt/traccar/conf/traccar.xml || \
-  sed -i '/<properties>/a <entry key=\"web.address\">0.0.0.0</entry>' /opt/traccar/conf/traccar.xml && \
-echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082} && \
-java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
+CONF=/opt/traccar/conf/traccar.xml; \
+if [ ! -f $CONF ]; then echo '<properties></properties>' > $CONF; fi; \
+grep -q 'web.port' $CONF || sed -i '/<properties>/a <entry key=\"web.port\">${PORT:-8082}</entry>' $CONF; \
+grep -q 'web.address' $CONF || sed -i '/<properties>/a <entry key=\"web.address\">0.0.0.0</entry>' $CONF; \
+grep -q 'database.default.url' $CONF || sed -i '/<properties>/a <entry key=\"database.default.url\">jdbc:sqlite:/opt/traccar/data/database.db</entry>' $CONF; \
+echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082}; \
+java -jar tracker-server.jar $CONF"]
+
+
