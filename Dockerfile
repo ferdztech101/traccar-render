@@ -14,9 +14,9 @@ RUN set -eux; \
     echo "✅ Installation complete. Contents:" && ls -l && \
     if [ ! -f tracker-server.jar ]; then echo "❌ tracker-server.jar missing after install!" && exit 1; fi
 
-# Document the ports for clarity
-EXPOSE 8082    # Web UI
-EXPOSE 5055    # Default device listener
+# Web UI port
+EXPOSE 8082
+# Default device listener port
+EXPOSE 5055
 
-# --- 🧠 Key Fix for Render: dynamically bind Traccar web.port to $PORT ---
 CMD ["bash", "-c", "sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT:-8082}</entry>|\" /opt/traccar/conf/traccar.xml && echo '🌍 Starting Traccar on port' ${PORT:-8082} && java -jar tracker-server.jar /opt/traccar/conf/traccar.xml"]
