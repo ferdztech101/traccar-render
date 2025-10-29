@@ -17,5 +17,7 @@ RUN set -eux; \
 EXPOSE 8082
 EXPOSE 5055
 
-CMD ["bash", "-c", "ls -la /opt/traccar && sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT:-8082}</entry>|\" /opt/traccar/conf/traccar.xml && java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml"]
+CMD ["bash", "-c", "sed -i \"s|<entry key='web.port'>8082</entry>|<entry key='web.port'>${PORT}</entry>|\" /opt/traccar/conf/traccar.xml && java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml"]
+
+
 
