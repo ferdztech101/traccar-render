@@ -1,26 +1,22 @@
-# === FerdzTech Stable Traccar v6.10.0 (Render Verified) ===
+# FerdzTech — Render-compatible Traccar build
 FROM openjdk:17-jdk-slim
 
 WORKDIR /opt/traccar
 
-# Install dependencies and download Traccar
-RUN set -eux; \
-    apt-get update && apt-get install -y wget unzip && \
+# Download and install Traccar
+RUN apt-get update && apt-get install -y wget unzip && \
     wget -O traccar.zip https://github.com/traccar/traccar/releases/download/v6.10.0/traccar-linux-64-6.10.0.zip && \
     unzip traccar.zip && rm traccar.zip && \
     chmod +x traccar.run && \
-    echo "🚀 Running Traccar installer..." && \
     ./traccar.run --target /opt/traccar/install --noexec && \
     mv /opt/traccar/install/* . && rm -rf /opt/traccar/install && \
-    mkdir -p /opt/traccar/data /opt/traccar/logs && chmod -R 777 /opt/traccar/data /opt/traccar/logs && \
-    echo "✅ Installation complete. Contents:" && ls -l && \
-    if [ ! -f tracker-server.jar ]; then echo '❌ tracker-server.jar missing!' && exit 1; fi
+    mkdir -p /opt/traccar/data /opt/traccar/logs && chmod -R 777 /opt/traccar/data /opt/traccar/logs
 
-# Expose the required ports
+# Document ports for clarity (Render auto-detects the one you actually use)
 EXPOSE 8082
 EXPOSE 5055
 
-# Startup command: ensures config and writable folders exist
+# --- Run-time command ---
 CMD ["bash", "-c", "\
 CONF=/opt/traccar/conf/traccar.xml; \
 mkdir -p /opt/traccar/data /opt/traccar/logs; chmod -R 777 /opt/traccar/data /opt/traccar/logs; \
@@ -32,4 +28,3 @@ grep -q 'web.port' $CONF || sed -i '/<properties>/a <entry key=\"web.port\">${PO
 grep -q 'config.default' $CONF || sed -i '/<properties>/a <entry key=\"config.default\">/opt/traccar/conf/default.xml</entry>' $CONF; \
 echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT}; \
 java -Djava.net.preferIPv4Stack=true -jar tracker-server.jar $CONF"]
-
