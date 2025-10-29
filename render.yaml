@@ -4,8 +4,8 @@ services:
     env: docker
     plan: starter
     branch: main
-    autoDeploy: true
     dockerfilePath: Dockerfile
+    autoDeploy: true
     disk:
       name: traccar-data
       mountPath: /opt/traccar/data
