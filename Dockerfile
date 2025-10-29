@@ -20,11 +20,15 @@ EXPOSE 5055
 # --- FIX: safe config creation + web binding ---
 CMD ["bash", "-c", "\
 CONF=/opt/traccar/conf/traccar.xml; \
+mkdir -p /opt/traccar/data /opt/traccar/logs; \
+chmod -R 777 /opt/traccar/data /opt/traccar/logs; \
 if [ ! -f $CONF ]; then echo '<properties></properties>' > $CONF; fi; \
+grep -q 'database.default.url' $CONF || sed -i '/<properties>/a <entry key=\"database.default.url\">jdbc:sqlite:/opt/traccar/data/database.db</entry>' $CONF; \
 grep -q 'web.port' $CONF || sed -i '/<properties>/a <entry key=\"web.port\">${PORT:-8082}</entry>' $CONF; \
 grep -q 'web.address' $CONF || sed -i '/<properties>/a <entry key=\"web.address\">0.0.0.0</entry>' $CONF; \
-grep -q 'database.default.url' $CONF || sed -i '/<properties>/a <entry key=\"database.default.url\">jdbc:sqlite:/opt/traccar/data/database.db</entry>' $CONF; \
 echo '🌍 Starting Traccar on 0.0.0.0:' ${PORT:-8082}; \
 java -jar tracker-server.jar $CONF"]
+
+
 
 
