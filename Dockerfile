@@ -1,4 +1,4 @@
-# === FerdzTech Traccar v6.10.0 Universal Auto-Fix Dockerfile ===
+# === FerdzTech Safe Auto-Build for Traccar v6.10.0 ===
 FROM openjdk:17-jdk-slim
 
 WORKDIR /opt/traccar
@@ -7,12 +7,17 @@ RUN apt-get update && apt-get install -y wget unzip && \
     wget -O traccar.zip https://github.com/traccar/traccar/releases/download/v6.10.0/traccar-linux-64-6.10.0.zip && \
     unzip traccar.zip && \
     rm traccar.zip && \
-    # Move tracker-server.jar up if it's inside a subdirectory
-    if [ -f tracker-server.jar ]; then echo "Traccar jar found in root"; \
+    # Detect if the .jar exists in root or subfolder
+    if [ -f tracker-server.jar ]; then \
+        echo "✅ tracker-server.jar found in root directory"; \
     else \
-        JAR_DIR=$(find . -type f -name "tracker-server.jar" -exec dirname {} \; | head -n 1) && \
-        echo "Moving files from $JAR_DIR" && \
-        mv "$JAR_DIR"/* . && rm -rf "$JAR_DIR"; \
+        SUBDIR=$(find . -maxdepth 1 -type d -name "traccar*" | head -n 1); \
+        if [ -n "$SUBDIR" ] && [ -d "$SUBDIR" ]; then \
+            echo "📦 Moving contents from $SUBDIR"; \
+            mv "$SUBDIR"/* . && rm -rf "$SUBDIR"; \
+        else \
+            echo "❌ tracker-server.jar not found after extraction" && exit 1; \
+        fi; \
     fi
 
 EXPOSE 8082
